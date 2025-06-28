@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.js
 
@@ -18,6 +18,118 @@
 .env.test.local
 .env.production.local
 
+# logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# nyc test coverage
+.nyc_output
+
+# grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
+.grunt
+
+# bower dependency directory (https://bower.io/)
+bower_components
+
+# node-waf configuration
+.lock-wscript
+
+# compiled binary addons (https://nodejs.org/api/addons.html)
+build/Release
+
+# dependency directories
+node_modules/
+jspm_packages/
+
+# typeScript v1 declaration files
+typings/
+
+# typeScript cache
+*.tsbuildinfo
+
+# optional npm cache directory
+.npm
+
+# optional eslint cache
+.eslintcache
+
+# microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# optional REPL history
+.node_repl_history
+
+# output of 'npm pack'
+*.tgz
+
+# yarn integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+.env.test
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# next.js build output
+.next
+
+# nuxt.js build / generate output
+.nuxt
+dist
+
+# gatsby files
+.cache/
+public
+
+# storybook build outputs
+.out
+.storybook-out
+
+# temporary folders
+tmp/
+temp/
+
+# editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# prettier
+.prettierignore
+
+# local environment files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
