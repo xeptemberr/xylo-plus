@@ -140,7 +140,7 @@ const Login: React.FC = () => {
             </div>
 
             {/* Links */}
-            <div className='flex justify-between items-center pt-2'>
+            <div className='flex justify-end items-center pt-2'>
               {/* <button
                 type='button'
                 className='text-gray-600 text-sm underline'
@@ -149,7 +149,7 @@ const Login: React.FC = () => {
               </button> */}
               <button
                 type='button'
-                className='text-gray-900 text-sm font-medium'
+                className='text-gray-900 text-sm font-bold underline'
                 onClick={() => navigate('/auth/join')}>
                 회원가입
               </button>

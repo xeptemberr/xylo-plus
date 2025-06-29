@@ -59,7 +59,10 @@ const VerificationModal: React.FC<VerificationModalProps> = ({ open, onClose, on
         </div>
         <button
           type='button'
-          onClick={onResend}
+          onClick={() => {
+            onResend();
+            setSeconds(TIMER_SECONDS);
+          }}
           disabled={isResending || seconds === 0}
           className={`w-full py-3 rounded-lg font-medium text-base mb-8 transition-colors ${
             isResending || seconds === 0
