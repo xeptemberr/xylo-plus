@@ -12,15 +12,14 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LockupModal from '../components/LockupModal';
+import { fetchUserDashboardInfo, fetchUserInfo } from '../service/api';
 import { startTokenRefresh, stopTokenRefresh } from '../service/clientApi';
 import { useSessionStore } from '../store/sessionStore';
 
 const Dashboard: React.FC = () => {
   const [copiedAddress, setCopiedAddress] = useState('');
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const { user, clearSession } = useSessionStore();
+  const { user, dashboard, clearSession, accessToken, setUser, setDashboard } = useSessionStore();
   const navigate = useNavigate();
-  const [showLockupModal, setShowLockupModal] = useState(false);
   const [lockupModalOpen, setLockupModalOpen] = useState(false);
 
   // 컴포넌트 마운트 시 자동 토큰 갱신 시작
@@ -32,6 +31,14 @@ const Dashboard: React.FC = () => {
       stopTokenRefresh();
     };
   }, []);
+
+  // Dashboard 진입 시 userInfo fetch
+  useEffect(() => {
+    if (accessToken && !user) {
+      fetchUserInfo(accessToken).then(setUser);
+      fetchUserDashboardInfo(accessToken).then(setDashboard);
+    }
+  }, [accessToken, user, setUser, setDashboard]);
 
   const handleCopyAddress = (type: React.SetStateAction<string>, address: string) => {
     navigator.clipboard.writeText(address);
@@ -45,36 +52,6 @@ const Dashboard: React.FC = () => {
     navigate('/');
   };
 
-  const assets = [
-    {
-      id: 1,
-      name: 'USDT',
-      fullName: 'Tether USD',
-      amount: '1,500',
-      value: '$ 1,500',
-      icon: '💵',
-      color: 'bg-green-500',
-    },
-    {
-      id: 2,
-      name: 'XLT',
-      fullName: 'Xylo Token',
-      amount: '333,000',
-      value: '$ 9,900',
-      icon: '⚫',
-      color: 'bg-black',
-    },
-    {
-      id: 3,
-      name: 'XUSD',
-      fullName: 'Xylo Stable Coin',
-      amount: '2,000',
-      value: '$ 2,000',
-      icon: '💰',
-      color: 'bg-yellow-500',
-    },
-  ];
-
   const notifications = [
     {
       id: 1,
@@ -84,6 +61,17 @@ const Dashboard: React.FC = () => {
       icon: '📢',
     },
   ];
+
+  if (!user) {
+    return (
+      <div className='min-h-screen flex items-center justify-center bg-gray-50'>
+        <span className='text-gray-400 text-lg'>사용자 정보를 불러오는 중...</span>
+      </div>
+    );
+  }
+
+  console.log('로그인 유저 정보', user);
+  console.log('로그인 유저 대시보드 정보', dashboard);
 
   return (
     <div className='min-h-screen bg-gray-50 max-w-sm mx-auto relative'>
@@ -103,7 +91,9 @@ const Dashboard: React.FC = () => {
           <img src='/logo_dash.png' alt='logo' className='w-[157px] h-[26px]' />
         </div>
         <div className='flex items-center space-x-3'>
-          <Headphones className='w-6 h-6 text-black' />
+          <button onClick={() => setLockupModalOpen(true)} className='text-black hover:text-gray-800 transition-colors'>
+            <Headphones className='w-6 h-6 text-black' />
+          </button>
           <button onClick={handleLogout} className='text-black hover:text-gray-800 transition-colors'>
             <LogOut className='w-5 h-5' />
           </button>
@@ -113,7 +103,7 @@ const Dashboard: React.FC = () => {
       {/* Welcome Message */}
       <div className='bg-white px-4 pb-4'>
         <div className='flex items-center space-x-2'>
-          <span className='text-sm text-gray-700'>{user?.phone || '사용자'} 회원님, 환영합니다!</span>
+          <span className='text-sm text-gray-700'>{user?.userId || '사용자'} 회원님, 환영합니다!</span>
           <span className='text-lg'>👋</span>
         </div>
       </div>
@@ -166,8 +156,10 @@ const Dashboard: React.FC = () => {
         <div className='bg-white rounded-xl p-4 mb-4'>
           <div className='flex items-start space-x-4'>
             {/* QR Code */}
-            <div className='w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center'>
-              <div className='w-12 h-12 bg-black'></div>
+            <div className='w-16 h-16 bg-white rounded-lg flex items-center justify-center'>
+              <div className='w-12 h-12'>
+                <img src='/token_qr.png' alt='QR CODE' />
+              </div>
             </div>
 
             {/* Address Info */}
@@ -176,7 +168,7 @@ const Dashboard: React.FC = () => {
                 <div className='text-sm font-medium text-gray-900 mb-1'>Token Address</div>
                 <div className='flex items-center justify-between'>
                   <div className='text-xs text-gray-500 truncate mr-2'>XLTMy69uUrDzWBa9JX1xq***</div>
-                  <button className='text-gray-400 hover:text-gray-600'>
+                  <button className='text-gray-400 hover:text-gray-600' onClick={() => setLockupModalOpen(true)}>
                     <Copy className='w-4 h-4' />
                   </button>
                   {/* <button
@@ -191,7 +183,7 @@ const Dashboard: React.FC = () => {
                 <div className='text-sm font-medium text-gray-900 mb-1'>Wallet Address</div>
                 <div className='flex items-center justify-between'>
                   <div className='text-xs text-gray-500'>락업 해제 후 활성화됩니다.</div>
-                  <button className='text-gray-400 hover:text-gray-600'>
+                  <button className='text-gray-400 hover:text-gray-600' onClick={() => setLockupModalOpen(true)}>
                     <Copy className='w-4 h-4' />
                   </button>
                   {/* <button
@@ -209,20 +201,20 @@ const Dashboard: React.FC = () => {
         <h3 className='text-lg font-bold text-gray-900 mb-4'>내 자산</h3>
 
         <div className='space-y-3'>
-          {assets.map((asset) => (
+          {dashboard?.assets.map((asset: any, index: number) => (
             <div key={asset.id} className='bg-white rounded-xl p-4 flex items-center justify-between'>
               <div className='flex items-center space-x-3'>
                 <div
                   className={`w-10 h-10 ${asset.color} rounded-full flex items-center justify-center text-white font-bold`}>
-                  {asset.icon}
+                  <img src={`./icon_token${index + 1}.png`} alt={asset.tokenSymbol} className='w-10 h-10' />
                 </div>
                 <div>
-                  <div className='font-bold text-gray-900'>{asset.name}</div>
-                  <div className='text-xs text-gray-500'>{asset.fullName}</div>
+                  <div className='font-bold text-gray-900'>{asset.tokenSymbol}</div>
+                  <div className='text-xs text-gray-500'>{asset.tokenName}</div>
                 </div>
               </div>
               <div className='text-right'>
-                <div className='font-bold text-gray-900'>{asset.amount}</div>
+                <div className='font-bold text-gray-900'>{asset.balance}</div>
                 <div className='text-xs text-gray-500'>{asset.value}</div>
               </div>
             </div>

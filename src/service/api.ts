@@ -29,6 +29,21 @@ export const refreshAccessToken = async (refreshToken: string) => {
     throw error;
   }
 };
+
+export const fetchUserInfo = async (accessToken: string) => {
+  const response = await api.get('/spc/api/fo/mypage/userInfo', {
+    headers: { 'X-AUTH-TOKEN': accessToken },
+  });
+  return response.data.data;
+};
+
+export const fetchUserDashboardInfo = async (accessToken: string) => {
+  const response = await api.get('/spc/api/fo/home/main', {
+    headers: { 'X-AUTH-TOKEN': accessToken },
+  });
+  return response.data.data;
+};
+
 // 서버 전용 인터셉터 설정
 api.interceptors.request.use(
   async (config) => {
