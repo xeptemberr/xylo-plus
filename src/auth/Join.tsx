@@ -2,18 +2,26 @@ import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import VerificationModal from '../components/VerificationModal';
 import api from '../service/api';
 
 interface FormData {
   mobilePhone: string;
   password: string;
   passwordChk: string;
+  verifiedCode?: string;
 }
 
 const Join: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
+  const [isSending, setIsSending] = useState(false);
+  const [sendResult, setSendResult] = useState<string | null>(null);
+  const [verificationOpen, setVerificationOpen] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
+  const [verifiedCode, setVerifiedCode] = useState<string | null>(null);
 
   const {
     register,
@@ -23,7 +31,10 @@ const Join: React.FC = () => {
   } = useForm<FormData>();
 
   const onSubmit = async (data: FormData) => {
-    const response = await api.post('/spc/api/fo/v2/signup/setUserInfo', data);
+    const response = await api.post('/spc/api/fo/v2/signup/setUserInfo', {
+      ...data,
+      authCode: verifiedCode,
+    });
     console.log('회원가입 응답:', response.data);
     if (response.data.resultCode === 'failed') {
       alert('회원가입에 실패했습니다.');
@@ -37,6 +48,45 @@ const Join: React.FC = () => {
   const password = watch('password');
   const passwordChk = watch('passwordChk');
   const hasValues = mobilePhone && password && passwordChk;
+
+  const sendVerificationCode = async () => {
+    if (!mobilePhone || !/^[0-9-]+$/.test(mobilePhone)) {
+      setSendResult('올바른 전화번호를 입력하세요.');
+      return;
+    }
+    setIsSending(true);
+    setSendResult(null);
+    try {
+      const response = await api.post('/spc/api/fo/v2/signup/auth/authCode', {
+        email: '',
+        mobilePhone: mobilePhone,
+        typeCode: 'SMS',
+      });
+      if (response.data.resultCode === 'success') {
+        setSendResult('인증번호가 발송되었습니다.');
+        setVerificationOpen(true);
+      } else {
+        setSendResult(response.data.message || '인증번호 발송에 실패했습니다.');
+      }
+    } catch (e) {
+      setSendResult('인증번호 발송 중 오류가 발생했습니다.');
+    }
+    setIsSending(false);
+  };
+
+  const handleResend = async () => {
+    setIsResending(true);
+    await sendVerificationCode();
+    setIsResending(false);
+  };
+
+  const handleVerify = (code: string) => {
+    setIsVerified(true);
+    setVerifiedCode(code);
+    setVerificationOpen(false);
+  };
+
+  const canSubmit = hasValues && isVerified;
 
   return (
     <div className='min-h-screen bg-gray-50 flex flex-col'>
@@ -73,19 +123,33 @@ const Join: React.FC = () => {
             {/* ID Field */}
             <div>
               <label className='block text-sm font-medium text-gray-900 mb-3'>아이디</label>
-              <input
-                type='text'
-                {...register('mobilePhone', {
-                  required: '아이디를 입력해주세요',
-                  pattern: {
-                    value: /^[0-9-]+$/,
-                    message: '전화번호 형식으로 입력해주세요',
-                  },
-                })}
-                className='w-full px-4 py-4 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:border-gray-300 focus:outline-none'
-                placeholder='전화번호를 입력하세요'
-              />
+              <div className='flex space-x-2'>
+                <input
+                  type='text'
+                  {...register('mobilePhone', {
+                    required: '아이디를 입력해주세요',
+                    pattern: {
+                      value: /^[0-9-]+$/,
+                      message: '전화번호 형식으로 입력해주세요',
+                    },
+                  })}
+                  className='w-full px-4 py-4 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:border-gray-300 focus:outline-none'
+                  placeholder='전화번호를 입력하세요'
+                />
+                <button
+                  type='button'
+                  onClick={sendVerificationCode}
+                  disabled={isSending || !mobilePhone || !!errors.mobilePhone}
+                  className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors whitespace-nowrap ${
+                    isSending || !mobilePhone || !!errors.mobilePhone
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-black text-white hover:bg-gray-800 active:bg-gray-900'
+                  }`}>
+                  {isSending ? '발송중...' : '인증번호 받기'}
+                </button>
+              </div>
               {errors.mobilePhone && <p className='text-red-500 text-sm mt-1'>{errors.mobilePhone.message}</p>}
+              {sendResult && <p className='text-sm mt-1 text-gray-600'>{sendResult}</p>}
             </div>
 
             {/* Password Field */}
@@ -143,9 +207,9 @@ const Join: React.FC = () => {
       <div className='px-6 pb-8 bg-gray-50'>
         <button
           type='submit'
-          disabled={!hasValues}
+          disabled={!canSubmit}
           className={`w-full py-4 font-medium text-lg rounded-xl transition-colors ${
-            hasValues
+            canSubmit
               ? 'bg-black text-white hover:bg-gray-800 active:bg-gray-900'
               : 'bg-gray-200 text-gray-400 cursor-not-allowed'
           }`}
@@ -153,6 +217,15 @@ const Join: React.FC = () => {
           가입하기
         </button>
       </div>
+
+      {/* Verification Modal */}
+      <VerificationModal
+        open={verificationOpen}
+        onClose={() => setVerificationOpen(false)}
+        onResend={handleResend}
+        onVerify={handleVerify}
+        isResending={isResending}
+      />
     </div>
   );
 };
