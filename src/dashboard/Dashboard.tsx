@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import InquiryModal from '../components/InquiryModal';
 import LockupModal from '../components/LockupModal';
 import { fetchUserDashboardInfo, fetchUserInfo } from '../service/api';
 import { startTokenRefresh, stopTokenRefresh } from '../service/clientApi';
@@ -21,6 +22,7 @@ const Dashboard: React.FC = () => {
   const { user, dashboard, clearSession, accessToken, setUser, setDashboard } = useSessionStore();
   const navigate = useNavigate();
   const [lockupModalOpen, setLockupModalOpen] = useState(false);
+  const [inquiryModalOpen, setInquiryModalOpen] = useState(false);
 
   // 컴포넌트 마운트 시 자동 토큰 갱신 시작
   useEffect(() => {
@@ -57,7 +59,14 @@ const Dashboard: React.FC = () => {
       id: 1,
       type: 'announcement',
       title: '[공지] Xylo Plus 앱 정식 출시 안내',
-      date: '09:00 31.07-24-2025',
+      date: '09:00 06-30-2025',
+      icon: '📢',
+    },
+    {
+      id: 2,
+      type: 'announcement',
+      title: '[알림] 메뉴 기능 출시 일정 안내',
+      date: '09:10 06-30-2025',
       icon: '📢',
     },
   ];
@@ -91,7 +100,9 @@ const Dashboard: React.FC = () => {
           <img src='/logo_dash.png' alt='logo' className='w-[157px] h-[26px]' />
         </div>
         <div className='flex items-center space-x-3'>
-          <button onClick={() => setLockupModalOpen(true)} className='text-black hover:text-gray-800 transition-colors'>
+          <button
+            className='text-black hover:text-gray-800 transition-colors'
+            onClick={() => setInquiryModalOpen(true)}>
             <Headphones className='w-6 h-6 text-black' />
           </button>
           <button onClick={handleLogout} className='text-black hover:text-gray-800 transition-colors'>
@@ -226,7 +237,10 @@ const Dashboard: React.FC = () => {
 
         <div className='space-y-3'>
           {notifications.map((notification) => (
-            <div key={notification.id} className='bg-white rounded-xl p-4'>
+            <div
+              key={notification.id}
+              className='bg-white rounded-xl p-4 cursor-pointer hover:bg-gray-50 transition'
+              onClick={() => navigate(`/notice/${notification.id}`)}>
               <div className='flex items-center justify-between'>
                 <div className='flex items-center space-x-3'>
                   <div className='w-8 h-8 bg-lime-400 rounded-full flex items-center justify-center'>📢</div>
@@ -242,6 +256,7 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
       <LockupModal open={lockupModalOpen} onClose={() => setLockupModalOpen(false)} />
+      <InquiryModal open={inquiryModalOpen} onClose={() => setInquiryModalOpen(false)} />
       <div className='h-8'></div>
     </div>
   );
