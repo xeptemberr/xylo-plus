@@ -6,10 +6,12 @@ interface SessionState {
   accessToken: string | null;
   refreshToken: string | null;
   user: any | null;
+  dashboard: any | null;
   lang: string;
   setAccessToken: (token: string) => void;
   setRefreshToken: (token: string) => void;
   setUser: (user: any) => void;
+  setDashboard: (dashboardInfo: any) => void;
   setLang: (lang: string) => void;
   clearSession: () => void;
   getSession: () => { accessToken: string | null; refreshToken: string | null; user: any | null };
@@ -22,6 +24,7 @@ export const useSessionStore = create<SessionState>()(
       accessToken: null,
       refreshToken: null,
       user: null,
+      dashboard: null,
       lang: 'ko',
 
       setAccessToken: (token: string) => {
@@ -35,7 +38,9 @@ export const useSessionStore = create<SessionState>()(
       setUser: (user: any) => {
         set({ user });
       },
-
+      setDashboard: (dashboard: any) => {
+        set({ dashboard });
+      },
       setLang: (lang: string) => {
         set({ lang });
         Cookies.set('lang', lang, { expires: 365 }); // 1년간 유지
@@ -66,6 +71,7 @@ export const useSessionStore = create<SessionState>()(
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
         user: state.user,
+        dashboard: state.dashboard,
         lang: state.lang,
       }),
     },

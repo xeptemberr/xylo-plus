@@ -41,12 +41,9 @@ const Login: React.FC = () => {
           alert('회원가입이 필요합니다.');
         }
       } else if (response.data.resultCode === 'success') {
-        // 성공 시에만 토큰과 사용자 정보 저장
-        const { accessToken, refreshToken, user } = response.data.data;
+        const { accessToken, refreshToken } = response.data.data;
         setAccessToken(accessToken);
         setRefreshToken(refreshToken);
-        setUser(user);
-        console.log('토큰:', accessToken);
         startTokenRefresh();
         navigate('/home');
       } else {
