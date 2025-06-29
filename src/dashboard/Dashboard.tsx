@@ -212,24 +212,36 @@ const Dashboard: React.FC = () => {
         <h3 className='text-lg font-bold text-gray-900 mb-4'>내 자산</h3>
 
         <div className='space-y-3'>
-          {dashboard?.assets.map((asset: any, index: number) => (
-            <div key={asset.id} className='bg-white rounded-xl p-4 flex items-center justify-between'>
-              <div className='flex items-center space-x-3'>
-                <div
-                  className={`w-10 h-10 ${asset.color} rounded-full flex items-center justify-center text-white font-bold`}>
-                  <img src={`./icon_token${index + 1}.png`} alt={asset.tokenSymbol} className='w-10 h-10' />
-                </div>
-                <div>
-                  <div className='font-bold text-gray-900'>{asset.tokenSymbol}</div>
-                  <div className='text-xs text-gray-500'>{asset.tokenName}</div>
-                </div>
+          <div className='bg-white rounded-xl p-4 flex items-center justify-between'>
+            <div className='flex items-center space-x-3'>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold`}>
+                <img src={`./icon_token1.png`} alt='XLT' className='w-10 h-10' />
               </div>
-              <div className='text-right'>
-                <div className='font-bold text-gray-900'>{asset.balance}</div>
-                <div className='text-xs text-gray-500'>{asset.value}</div>
+              <div>
+                <div className='font-bold text-gray-900'>XLT</div>
+                <div className='text-xs text-gray-500'>Xylo Token</div>
               </div>
             </div>
-          ))}
+            <div className='text-right'>
+              <div className='font-bold text-gray-900'>{user.xltAmount.toLocaleString()}</div>
+              <div className='text-xs text-gray-500'>${user.xltPrice.toLocaleString()}</div>
+            </div>
+          </div>
+          <div className='bg-white rounded-xl p-4 flex items-center justify-between'>
+            <div className='flex items-center space-x-3'>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold`}>
+                <img src={`./icon_token2.png`} alt='XUSD' className='w-10 h-10' />
+              </div>
+              <div>
+                <div className='font-bold text-gray-900'>XUSD</div>
+                <div className='text-xs text-gray-500'>Xylo Stable Coin </div>
+              </div>
+            </div>
+            <div className='text-right'>
+              <div className='font-bold text-gray-900'>{user.xusdAmount.toLocaleString()}</div>
+              <div className='text-xs text-gray-500'>${user.xusdPrice.toLocaleString()}</div>
+            </div>
+          </div>
         </div>
 
         {/* Notifications */}
