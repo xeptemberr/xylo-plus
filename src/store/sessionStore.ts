@@ -4,13 +4,15 @@ import { persist } from 'zustand/middleware';
 
 interface SessionState {
   accessToken: string | null;
+  refreshToken: string | null;
   user: any | null;
   lang: string;
   setAccessToken: (token: string) => void;
+  setRefreshToken: (token: string) => void;
   setUser: (user: any) => void;
   setLang: (lang: string) => void;
   clearSession: () => void;
-  getSession: () => { accessToken: string | null; user: any | null };
+  getSession: () => { accessToken: string | null; refreshToken: string | null; user: any | null };
   getLang: () => string;
 }
 
@@ -18,6 +20,7 @@ export const useSessionStore = create<SessionState>()(
   persist(
     (set, get) => ({
       accessToken: null,
+      refreshToken: null,
       user: null,
       lang: 'ko',
 
@@ -26,7 +29,9 @@ export const useSessionStore = create<SessionState>()(
         // 쿠키에도 저장 (선택사항)
         Cookies.set('accessToken', token, { expires: 7 }); // 7일간 유지
       },
-
+      setRefreshToken: (token: string) => {
+        set({ refreshToken: token });
+      },
       setUser: (user: any) => {
         set({ user });
       },
@@ -37,7 +42,7 @@ export const useSessionStore = create<SessionState>()(
       },
 
       clearSession: () => {
-        set({ accessToken: null, user: null });
+        set({ accessToken: null, refreshToken: null, user: null });
         Cookies.remove('accessToken');
       },
 
@@ -45,6 +50,7 @@ export const useSessionStore = create<SessionState>()(
         const state = get();
         return {
           accessToken: state.accessToken,
+          refreshToken: state.refreshToken,
           user: state.user,
         };
       },
@@ -58,6 +64,7 @@ export const useSessionStore = create<SessionState>()(
       name: 'session-storage', // localStorage 키 이름
       partialize: (state) => ({
         accessToken: state.accessToken,
+        refreshToken: state.refreshToken,
         user: state.user,
         lang: state.lang,
       }),
@@ -72,10 +79,11 @@ export const getSession = () => {
     const state = useSessionStore.getState();
     return {
       accessToken: state.accessToken,
+      refreshToken: state.refreshToken,
       user: state.user,
     };
   }
-  return { accessToken: null, user: null };
+  return { accessToken: null, refreshToken: null, user: null };
 };
 
 export const getLang = () => {

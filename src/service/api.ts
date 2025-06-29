@@ -12,6 +12,23 @@ const api = axios.create({
   },
 });
 
+// 토큰 갱신 함수
+export const refreshAccessToken = async (refreshToken: string) => {
+  try {
+    const response = await api.post('/spc/api/fo/userlogin/refresh', {
+      refreshToken: refreshToken,
+    });
+
+    if (response.data.resultCode === 'success') {
+      return response.data.data;
+    } else {
+      throw new Error('토큰 갱신 실패');
+    }
+  } catch (error) {
+    console.error('토큰 갱신 중 오류:', error);
+    throw error;
+  }
+};
 // 서버 전용 인터셉터 설정
 api.interceptors.request.use(
   async (config) => {

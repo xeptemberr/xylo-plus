@@ -1,12 +1,27 @@
 import { ArrowDown, ArrowUp, Check, ChevronRight, Copy, Headphones, History, LogOut, Users } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import LockupModal from '../components/LockupModal';
+import { startTokenRefresh, stopTokenRefresh } from '../service/clientApi';
 import { useSessionStore } from '../store/sessionStore';
 
 const Dashboard: React.FC = () => {
   const [copiedAddress, setCopiedAddress] = useState('');
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const { user, clearSession } = useSessionStore();
   const navigate = useNavigate();
+  const [showLockupModal, setShowLockupModal] = useState(false);
+  const [lockupModalOpen, setLockupModalOpen] = useState(false);
+
+  // 컴포넌트 마운트 시 자동 토큰 갱신 시작
+  useEffect(() => {
+    startTokenRefresh();
+
+    // 컴포넌트 언마운트 시 자동 갱신 중지
+    return () => {
+      stopTokenRefresh();
+    };
+  }, []);
 
   const handleCopyAddress = (type: React.SetStateAction<string>, address: string) => {
     navigator.clipboard.writeText(address);
@@ -15,6 +30,7 @@ const Dashboard: React.FC = () => {
   };
 
   const handleLogout = () => {
+    stopTokenRefresh(); // 로그아웃 시 자동 갱신 중지
     clearSession();
     navigate('/');
   };
@@ -74,13 +90,11 @@ const Dashboard: React.FC = () => {
       {/* Header */}
       <div className='bg-white px-4 py-4 flex items-center justify-between'>
         <div className='flex items-center space-x-2'>
-          <div className='text-xl font-bold'>XYLO</div>
-          <div className='bg-lime-400 text-black text-xs font-bold px-2 py-1 rounded'>Plus</div>
-          <div className='text-sm text-gray-600'>Wallet</div>
+          <img src='/logo_dash.png' alt='logo' className='w-[157px] h-[26px]' />
         </div>
         <div className='flex items-center space-x-3'>
-          <Headphones className='w-6 h-6 text-gray-600' />
-          <button onClick={handleLogout} className='text-gray-600 hover:text-gray-800 transition-colors'>
+          <Headphones className='w-6 h-6 text-black' />
+          <button onClick={handleLogout} className='text-black hover:text-gray-800 transition-colors'>
             <LogOut className='w-5 h-5' />
           </button>
         </div>
@@ -107,28 +121,25 @@ const Dashboard: React.FC = () => {
 
         {/* Action Buttons */}
         <div className='flex justify-between'>
-          <button className='flex flex-col items-center space-y-2'>
+          <button className='flex flex-col items-center space-y-2' onClick={() => setLockupModalOpen(true)}>
             <div className='w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center'>
               <ArrowUp className='w-6 h-6 text-white' />
             </div>
             <span className='text-xs text-gray-300'>보내기</span>
           </button>
-
-          <button className='flex flex-col items-center space-y-2'>
+          <button className='flex flex-col items-center space-y-2' onClick={() => setLockupModalOpen(true)}>
             <div className='w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center'>
               <Users className='w-6 h-6 text-white' />
             </div>
             <span className='text-xs text-gray-300'>스왑하기</span>
           </button>
-
-          <button className='flex flex-col items-center space-y-2'>
+          <button className='flex flex-col items-center space-y-2' onClick={() => setLockupModalOpen(true)}>
             <div className='w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center'>
               <ArrowDown className='w-6 h-6 text-white' />
             </div>
             <span className='text-xs text-gray-300'>받기</span>
           </button>
-
-          <button className='flex flex-col items-center space-y-2'>
+          <button className='flex flex-col items-center space-y-2' onClick={() => setLockupModalOpen(true)}>
             <div className='w-12 h-12 bg-lime-400 rounded-full flex items-center justify-center'>
               <History className='w-6 h-6 text-black' />
             </div>
@@ -155,11 +166,14 @@ const Dashboard: React.FC = () => {
                 <div className='text-sm font-medium text-gray-900 mb-1'>Token Address</div>
                 <div className='flex items-center justify-between'>
                   <div className='text-xs text-gray-500 truncate mr-2'>XLTMy69uUrDzWBa9JX1xq***</div>
-                  <button
+                  <button className='text-gray-400 hover:text-gray-600'>
+                    <Copy className='w-4 h-4' />
+                  </button>
+                  {/* <button
                     onClick={() => handleCopyAddress('token', 'XLTMy69uUrDzWBa9JX1xq')}
                     className='text-gray-400 hover:text-gray-600'>
                     <Copy className='w-4 h-4' />
-                  </button>
+                  </button> */}
                 </div>
               </div>
 
@@ -167,11 +181,14 @@ const Dashboard: React.FC = () => {
                 <div className='text-sm font-medium text-gray-900 mb-1'>Wallet Address</div>
                 <div className='flex items-center justify-between'>
                   <div className='text-xs text-gray-500'>락업 해제 후 활성화됩니다.</div>
-                  <button
+                  <button className='text-gray-400 hover:text-gray-600'>
+                    <Copy className='w-4 h-4' />
+                  </button>
+                  {/* <button
                     onClick={() => handleCopyAddress('wallet', 'wallet-address')}
                     className='text-gray-400 hover:text-gray-600'>
                     <Copy className='w-4 h-4' />
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </div>
@@ -222,7 +239,7 @@ const Dashboard: React.FC = () => {
           ))}
         </div>
       </div>
-
+      <LockupModal open={lockupModalOpen} onClose={() => setLockupModalOpen(false)} />
       <div className='h-8'></div>
     </div>
   );
