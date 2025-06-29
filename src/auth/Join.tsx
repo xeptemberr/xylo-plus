@@ -1,12 +1,13 @@
+import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import React, { useState } from 'react';
-import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import api from '../service/api';
 
 interface FormData {
-  id: string;
+  mobilePhone: string;
   password: string;
-  confirmPassword: string;
+  passwordChk: string;
 }
 
 const Join: React.FC = () => {
@@ -21,16 +22,21 @@ const Join: React.FC = () => {
     formState: { errors },
   } = useForm<FormData>();
 
-  const onSubmit = (data: FormData) => {
-    console.log('Form submitted:', data);
-    // Add your form submission logic here
-    navigate('/auth/complete');
+  const onSubmit = async (data: FormData) => {
+    const response = await api.post('/spc/api/fo/v2/signup/setUserInfo', data);
+    console.log('회원가입 응답:', response.data);
+    if (response.data.resultCode === 'failed') {
+      alert('회원가입에 실패했습니다.');
+    } else {
+      alert('회원가입에 성공했습니다.');
+      navigate('/auth/complete');
+    }
   };
 
-  const id = watch('id');
+  const mobilePhone = watch('mobilePhone');
   const password = watch('password');
-  const confirmPassword = watch('confirmPassword');
-  const hasValues = id && password && confirmPassword;
+  const passwordChk = watch('passwordChk');
+  const hasValues = mobilePhone && password && passwordChk;
 
   return (
     <div className='min-h-screen bg-gray-50 flex flex-col'>
@@ -48,18 +54,16 @@ const Join: React.FC = () => {
         <div className='w-full max-w-sm'>
           {/* Logo and Title Section */}
           <div className='text-center mb-12'>
-            {/* Logo */}
-            <div className='w-24 h-24 bg-lime-400 rounded-2xl mx-auto mb-8 flex items-center justify-center relative'>
-              <div className='text-black font-bold text-3xl'>xy</div>
-              <div className='absolute top-2 right-2 w-6 h-6 bg-black rounded-full flex items-center justify-center'>
-                <span className='text-lime-400 text-lg font-bold'>+</span>
-              </div>
+            <div className='flex justify-center items-center mb-4'>
+              <img src='/logo.png' alt='logo' className='w-[108px] h-[108px]' />
             </div>
 
             {/* Title */}
-            <h1 className='text-xl font-bold text-gray-900 mb-1'>Earn with</h1>
-            <h1 className='text-xl font-bold text-gray-900 mb-3'>Every Connection</h1>
-            <p className='text-sm text-gray-500'>Rewards through XYLO PLUS</p>
+            <h1 className='text-xl font-bold text-gray-800 mb-2'>
+              Earn with <br />
+              Every Connection
+            </h1>
+            <p className='text-sm text-gray-400'>Rewards through XYLO PLUS</p>
           </div>
 
           {/* Form Section */}
@@ -71,7 +75,7 @@ const Join: React.FC = () => {
               <label className='block text-sm font-medium text-gray-900 mb-3'>아이디</label>
               <input
                 type='text'
-                {...register('id', {
+                {...register('mobilePhone', {
                   required: '아이디를 입력해주세요',
                   pattern: {
                     value: /^[0-9-]+$/,
@@ -81,7 +85,7 @@ const Join: React.FC = () => {
                 className='w-full px-4 py-4 border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:border-gray-300 focus:outline-none'
                 placeholder='전화번호를 입력하세요'
               />
-              {errors.id && <p className='text-red-500 text-sm mt-1'>{errors.id.message}</p>}
+              {errors.mobilePhone && <p className='text-red-500 text-sm mt-1'>{errors.mobilePhone.message}</p>}
             </div>
 
             {/* Password Field */}
@@ -115,7 +119,7 @@ const Join: React.FC = () => {
               <div className='relative'>
                 <input
                   type={showConfirmPassword ? 'text' : 'password'}
-                  {...register('confirmPassword', {
+                  {...register('passwordChk', {
                     required: '비밀번호를 한번 더 입력해주세요',
                     validate: (value) => value === password || '비밀번호가 일치하지 않습니다',
                   })}
@@ -129,7 +133,7 @@ const Join: React.FC = () => {
                   {showConfirmPassword ? <EyeOff className='w-5 h-5' /> : <Eye className='w-5 h-5' />}
                 </button>
               </div>
-              {errors.confirmPassword && <p className='text-red-500 text-sm mt-1'>{errors.confirmPassword.message}</p>}
+              {errors.passwordChk && <p className='text-red-500 text-sm mt-1'>{errors.passwordChk.message}</p>}
             </div>
           </form>
         </div>
