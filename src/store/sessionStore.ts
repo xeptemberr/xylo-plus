@@ -29,11 +29,9 @@ export const useSessionStore = create<SessionState>()(
         // 쿠키에도 저장 (선택사항)
         Cookies.set('accessToken', token, { expires: 7 }); // 7일간 유지
       },
-
       setRefreshToken: (token: string) => {
         set({ refreshToken: token });
       },
-
       setUser: (user: any) => {
         set({ user });
       },

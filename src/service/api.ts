@@ -29,7 +29,6 @@ export const refreshAccessToken = async (refreshToken: string) => {
     throw error;
   }
 };
-
 // 서버 전용 인터셉터 설정
 api.interceptors.request.use(
   async (config) => {
