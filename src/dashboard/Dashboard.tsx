@@ -1,4 +1,14 @@
-import { ArrowDown, ArrowUp, Check, ChevronRight, Copy, Headphones, History, LogOut, Users } from 'lucide-react';
+import {
+  ArrowDownFromLine,
+  ArrowRightLeft,
+  ArrowUpFromLine,
+  Check,
+  ChevronRight,
+  Copy,
+  FileClock,
+  Headphones,
+  LogOut,
+} from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LockupModal from '../components/LockupModal';
@@ -123,25 +133,25 @@ const Dashboard: React.FC = () => {
         <div className='flex justify-between'>
           <button className='flex flex-col items-center space-y-2' onClick={() => setLockupModalOpen(true)}>
             <div className='w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center'>
-              <ArrowUp className='w-6 h-6 text-white' />
+              <ArrowUpFromLine className='w-6 h-6 text-white' />
             </div>
             <span className='text-xs text-gray-300'>보내기</span>
           </button>
           <button className='flex flex-col items-center space-y-2' onClick={() => setLockupModalOpen(true)}>
             <div className='w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center'>
-              <Users className='w-6 h-6 text-white' />
+              <ArrowRightLeft className='w-6 h-6 text-white' />
             </div>
             <span className='text-xs text-gray-300'>스왑하기</span>
           </button>
           <button className='flex flex-col items-center space-y-2' onClick={() => setLockupModalOpen(true)}>
             <div className='w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center'>
-              <ArrowDown className='w-6 h-6 text-white' />
+              <ArrowDownFromLine className='w-6 h-6 text-white' />
             </div>
             <span className='text-xs text-gray-300'>받기</span>
           </button>
           <button className='flex flex-col items-center space-y-2' onClick={() => setLockupModalOpen(true)}>
             <div className='w-12 h-12 bg-lime-400 rounded-full flex items-center justify-center'>
-              <History className='w-6 h-6 text-black' />
+              <FileClock className='w-6 h-6 text-black' />
             </div>
             <span className='text-xs text-gray-300'>히스토리</span>
           </button>
