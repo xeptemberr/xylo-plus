@@ -112,10 +112,10 @@ const Dashboard: React.FC = () => {
       <div className='mx-4 mt-4 bg-gradient-to-b from-gray-600 to-gray-900 rounded-xl shadow-lg rounded-2xl p-6 text-white'>
         <div className='text-center mb-6'>
           <div className='text-sm text-gray-300 mb-2'>총 자산</div>
-          <div className='text-4xl font-bold mb-2'>$13,490</div>
+          <div className='text-4xl font-bold mb-2'>$ {user.xltPrice.toLocaleString()}</div>
           <div className='flex items-center justify-center space-x-2'>
-            <span className='text-sm'>+ $730.25</span>
-            <span className='text-green-400 text-sm flex items-center'>▲ 9.04%</span>
+            {/* <span className='text-sm'>+ $730.25</span> */}
+            {/* <span className='text-green-400 text-sm flex items-center'>▲ 9.04%</span> */}
           </div>
         </div>
 
