@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import api from '../service/api';
+import { startTokenRefresh } from '../service/clientApi';
 import { useSessionStore } from '../store/sessionStore';
 import '../styles/Auth.css';
 
@@ -15,7 +16,7 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { setAccessToken, setUser } = useSessionStore();
+  const { setAccessToken, setUser, setRefreshToken } = useSessionStore();
 
   const {
     register,
@@ -41,18 +42,22 @@ const Login: React.FC = () => {
         }
       } else if (response.data.resultCode === 'success') {
         // 성공 시에만 토큰과 사용자 정보 저장
-        const { accessToken, user } = response.data.data;
+        const { accessToken, refreshToken, user } = response.data.data;
         setAccessToken(accessToken);
+        setRefreshToken(refreshToken);
         setUser(user);
         console.log('토큰:', accessToken);
+        startTokenRefresh();
         navigate('/home');
       } else {
         // resultCode가 'success'가 아닌 다른 값인 경우도 처리
         console.log('예상치 못한 resultCode:', response.data.resultCode);
         // 일단 성공으로 간주하고 진행
-        const { accessToken, user } = response.data.data;
+        const { accessToken, refreshToken, user } = response.data.data;
         setAccessToken(accessToken);
+        setRefreshToken(refreshToken);
         setUser(user);
+        startTokenRefresh();
         navigate('/home');
       }
     } catch (error) {
