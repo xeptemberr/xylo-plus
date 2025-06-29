@@ -141,12 +141,12 @@ const Login: React.FC = () => {
 
             {/* Links */}
             <div className='flex justify-between items-center pt-2'>
-              <button
+              {/* <button
                 type='button'
                 className='text-gray-600 text-sm underline'
                 onClick={() => alert('비밀번호 찾기 페이지로 이동')}>
                 비밀번호를 잊으셨나요?
-              </button>
+              </button> */}
               <button
                 type='button'
                 className='text-gray-900 text-sm font-medium'
