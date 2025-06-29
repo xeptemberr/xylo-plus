@@ -127,21 +127,18 @@ const Dashboard: React.FC = () => {
             </div>
             <span className='text-xs text-gray-300'>보내기</span>
           </button>
-
           <button className='flex flex-col items-center space-y-2' onClick={() => setLockupModalOpen(true)}>
             <div className='w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center'>
               <Users className='w-6 h-6 text-white' />
             </div>
             <span className='text-xs text-gray-300'>스왑하기</span>
           </button>
-
           <button className='flex flex-col items-center space-y-2' onClick={() => setLockupModalOpen(true)}>
             <div className='w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center'>
               <ArrowDown className='w-6 h-6 text-white' />
             </div>
             <span className='text-xs text-gray-300'>받기</span>
           </button>
-
           <button className='flex flex-col items-center space-y-2' onClick={() => setLockupModalOpen(true)}>
             <div className='w-12 h-12 bg-lime-400 rounded-full flex items-center justify-center'>
               <History className='w-6 h-6 text-black' />
@@ -242,10 +239,7 @@ const Dashboard: React.FC = () => {
           ))}
         </div>
       </div>
-
-      {/* Lockup Modal */}
       <LockupModal open={lockupModalOpen} onClose={() => setLockupModalOpen(false)} />
-
       <div className='h-8'></div>
     </div>
   );
